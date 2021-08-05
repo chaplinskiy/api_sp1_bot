@@ -150,3 +150,6 @@ static/
 posts/static/
 media/
 
+# это тож не надо
+api_praktikum.py
+
