@@ -1,1 +1,3 @@
-worker: python homework.py
+web: python app.py
+
+# worker: python homework.py

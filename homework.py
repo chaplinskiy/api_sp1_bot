@@ -54,7 +54,7 @@ def main():
             homework = get_homeworks(current_timestamp)['homeworks']
             if len(homework) != 0:
                 send_message(parse_homework_status(homework[0]))
-                time.sleep(5 * 60)  # Опрашивать раз в пять минут
+                time.sleep(20 * 60)  # Опрашивать раз в 20 минут
 
         except Exception as e:
             print(f'Бот упал с ошибкой: {e}')
