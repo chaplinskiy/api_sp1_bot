@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 PRAKTIKUM_TOKEN = os.getenv('PRAKTIKUM_TOKEN')
-# PRAKTIKUM_URL = os.getenv('PRAKTIKUM_URL')
+PRAKTIKUM_URL = 'https://praktikum.yandex.ru/api/'
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 
@@ -41,10 +41,7 @@ def parse_homework_status(homework):
 
 def get_homeworks(current_timestamp):
     yptoken = PRAKTIKUM_TOKEN
-    # Михаил, по какой-то причине тест на 11 строке файла tests/test_1.py
-    # не принимает f-строку ниже. Пришлось пока оставить как есть:
-    # url = f'{PRAKTIKUM_URL}user_api/homework_statuses/'
-    url = 'https://praktikum.yandex.ru/api/user_api/homework_statuses/'
+    url = f'{PRAKTIKUM_URL}user_api/homework_statuses/'
     headers = {'Authorization': f'OAuth {yptoken}'}
     current_timestamp = current_timestamp or int(time.time())
     payload = {'from_date': current_timestamp}
