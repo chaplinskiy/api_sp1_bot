@@ -41,7 +41,7 @@ def parse_homework_status(homework):
 def get_homeworks(current_timestamp):
     yptoken = PRAKTIKUM_TOKEN
     ypurl = PRAKTIKUM_URL
-    url = f'{ypurl}'
+    url = f'{ypurl}user_api/homework_statuses/'
     headers = {'Authorization': f'OAuth {yptoken}'}
     current_timestamp = current_timestamp or int(time.time())
     payload = {'from_date': current_timestamp}
