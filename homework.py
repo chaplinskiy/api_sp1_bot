@@ -36,6 +36,7 @@ def parse_homework_status(homework):
         return f'У вас проверили работу "{homework_name}"!\n\n{verdict}'
     except Exception as e:
         logger.error(f'У нас какие-то проблемки: {e}')
+        return f'{e}'
 
 
 def get_homeworks(current_timestamp):
@@ -45,11 +46,13 @@ def get_homeworks(current_timestamp):
     headers = {'Authorization': f'OAuth {yptoken}'}
     current_timestamp = current_timestamp or int(time.time())
     payload = {'from_date': current_timestamp}
+    # payload = {'from_date': 0}
     try:
         homework_statuses = requests.get(url, headers=headers, params=payload)
         return homework_statuses.json()
     except ConnectionError as e:
         logger.error(f'Возможны проблемы с доступностью API: {e}')
+        return f'{e}'
 
 
 def send_message(message):
@@ -63,8 +66,8 @@ def main():
 
     while True:
         try:
-            homework = get_homeworks(current_timestamp)['homeworks']
-            if len(homework) != 0:
+            homework = get_homeworks(current_timestamp).get('homeworks')
+            if len(homework) > 0:
                 send_message(parse_homework_status(homework[0]))
                 time.sleep(20 * 60)  # Опрашивать раз в 20 минут
 
