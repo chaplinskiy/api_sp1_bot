@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 PRAKTIKUM_TOKEN = os.getenv('PRAKTIKUM_TOKEN')
+PRAKTIKUM_URL = os.getenv('PRAKTIKUM_URL')
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 
@@ -18,36 +19,47 @@ logging.basicConfig(
     filename='homework.log', filemode='w'
 )
 
+logger = logging.getLogger(__name__)
+
 bot = telegram.Bot(token=TELEGRAM_TOKEN)
 
 
 def parse_homework_status(homework):
-    homework_name = homework['homework_name']
-    if homework['status'] == 'rejected':
-        verdict = 'К сожалению, в работе нашлись ошибки.'
-    else:
-        verdict = 'Ревьюеру всё понравилось, работа зачтена!'
-    return f'У вас проверили работу "{homework_name}"!\n\n{verdict}'
+    try:
+        homework_name = homework['homework_name']
+        if homework['status'] == 'rejected':
+            verdict = 'К сожалению, в работе нашлись ошибки.'
+        elif homework['status'] == 'approved':
+            verdict = 'Ревьюеру всё понравилось, работа зачтена!'
+        else:
+            verdict = 'Ни апрува, ни реджекта, а незнамо что!'
+        return f'У вас проверили работу "{homework_name}"!\n\n{verdict}'
+    except Exception as e:
+        logger.error(f'У нас какие-то проблемки: {e}')
 
 
 def get_homeworks(current_timestamp):
     yptoken = PRAKTIKUM_TOKEN
-    url = 'https://praktikum.yandex.ru/api/user_api/homework_statuses/'
+    ypurl = PRAKTIKUM_URL
+    url = f'{ypurl}'
     headers = {'Authorization': f'OAuth {yptoken}'}
     current_timestamp = current_timestamp or int(time.time())
     payload = {'from_date': current_timestamp}
-    homework_statuses = requests.get(url, headers=headers, params=payload)
-    return homework_statuses.json()
+    try:
+        homework_statuses = requests.get(url, headers=headers, params=payload)
+        return homework_statuses.json()
+    except ConnectionError as e:
+        logger.error(f'Возможны проблемы с доступностью API: {e}')
 
 
 def send_message(message):
-    logging.info('Message sent')
+    logger.info('Message sent')
     return bot.send_message(chat_id=CHAT_ID, text=message)
 
 
 def main():
     current_timestamp = int(time.time())  # Начальное значение timestamp
-    logging.debug('Bot started')
+    logger.debug('Bot started')
 
     while True:
         try:
@@ -57,10 +69,11 @@ def main():
                 time.sleep(20 * 60)  # Опрашивать раз в 20 минут
 
         except Exception as e:
-            print(f'Бот упал с ошибкой: {e}')
             send_message(f'Бот упал с ошибкой: {e}')
-            logging.error(f'Bot crashed: {e}')
-            time.sleep(5)
+            logger.error(f'Ошибочка вышла: {e}')
+            # Не будем дергать судьбу за Хероку, передернем раз в 5 минут
+            # (а не раз в 5 секунд, как раньше)
+            time.sleep(5 * 60)
 
 
 if __name__ == '__main__':
