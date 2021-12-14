@@ -33,7 +33,7 @@ def parse_homework_status(homework):
             verdict = 'Ревьюеру всё понравилось, работа зачтена!'
         else:
             verdict = 'Ни апрува, ни реджекта, а незнамо что!'
-        return f'У вас проверили работу "{homework_name}"!\n\n{verdict}'
+        return f'mbp9.1 У вас проверили работу "{homework_name}"!\n\n{verdict}'
     except Exception as e:
         logger.error(f'У нас какие-то проблемки: {e}')
         return f'{e}'
@@ -70,7 +70,7 @@ def main():
                 time.sleep(20 * 60)  # Опрашивать раз в 20 минут
 
         except Exception as e:
-            send_message(f'Бот упал с ошибкой: {e}')
+            send_message(f'mbp9.1 Бот упал с ошибкой: {e}')
             logger.error(f'Ошибочка вышла: {e}')
             # Не будем дергать судьбу за Хероку, передернем раз в 5 минут
             # (а не раз в 5 секунд, как раньше)
